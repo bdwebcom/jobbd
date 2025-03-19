@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>মাইক্রো জব ড্যাশবোর্ড</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #10B981;
+            --secondary: #059669;
+            --accent: #D1FAE5;
+        }
+
+        body {
+            background: #F0FDF4;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .dashboard {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* হেডার সেকশন */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-id {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* ব্যালেন্স কার্ড */
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .balance-amount {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        /* ট্রানজ্যাকশন বাটন */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .deposit-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .withdraw-btn {
+            background: #EF4444;
+            color: white;
+        }
+
+        /* ট্রানজ্যাকশন হিস্টোরি */
+        .transaction-history {
+            background: #F9FAFB;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .transaction-amount.deposit {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .transaction-amount.withdraw {
+            color: #EF4444;
+            font-weight: 600;
+        }
+
+        /* লগআউট বাটন */
+        .logout-btn {
+            background: none;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .balance-amount {
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- হেডার -->
+        <div class="dashboard-header">
+            <div>
+                <h1>আপনার ড্যাশবোর্ড <span class="user-id">ID: <span id="userId"></span></span></h1>
+                <p>মোবাইল: <span id="userPhone"></span></p>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> লগআউট
+            </button>
+        </div>
+
+        <!-- ব্যালেন্স কার্ড -->
+        <div class="balance-card">
+            <h3>বর্তমান ব্যালেন্স</h3>
+            <div class="balance-amount">৳ 1,250.00</div>
+            <p>সর্বশেষ আপডেট: ২৫ ডিসেম্বর ২০২৩</p>
+        </div>
+
+        <!-- ট্রানজ্যাকশন অপশন -->
+        <div class="action-buttons">
+            <button class="action-btn deposit-btn">
+                <i class="fas fa-coins"></i>
+                ডিপোজিট করুন
+            </button>
+            <button class="action-btn withdraw-btn">
+                <i class="fas fa-wallet"></i>
+                উত্তোলন করুন
+            </button>
+        </div>
+
+        <!-- ট্রানজ্যাকশন হিস্টোরি -->
+        <div class="transaction-history">
+            <h3>সাম্প্রতিক লেনদেন</h3>
+            <div class="transaction-item">
+                <div>টাস্ক #125 কমপ্লিশন</div>
+                <div class="transaction-amount deposit">+ ৳500.00</div>
+            </div>
+            <div class="transaction-item">
+                <div>উত্তোলন (বিকাশ)</div>
+                <div class="transaction-amount withdraw">- ৳300.00</div>
+            </div>
+            <div class="transaction-item">
+                <div>রেফারেল বোনাস</div>
+                <div class="transaction-amount deposit">+ ৳150.00</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // সেশন চেক
+        function checkSession() {
+            if(localStorage.getItem('isLoggedIn') !== 'true') {
+                window.location.href = 'index.html';
+            }
+        }
+        checkSession();
+
+        // ইউজার ডেটা শো
+        document.getElementById('userId').textContent = localStorage.getItem('userId');
+        document.getElementById('userPhone').textContent = localStorage.getItem('userPhone');
+
+        // লগআউট ফাংশন
+        function logout() {
+            localStorage.clear();
+            window.location.href = '../index.html';
+        }
+
+        // ডিপোজিট/উত্তোলন বাটন হ্যান্ডলার (প্লেসহোল্ডার)
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.classList.contains('deposit-btn') ? 'ডিপোজিট' : 'উত্তোলন';
+                alert(`${action} সিস্টেমটি শীঘ্রই আসছে!`);
+            });
+        });
+    </script>
+</body>
+</html>
